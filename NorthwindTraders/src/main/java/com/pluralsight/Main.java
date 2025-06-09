@@ -1,8 +1,6 @@
 package com.pluralsight;
-
-import com.mysql.cj.jdbc.MysqlDataSource;
 import java.sql.*;
-import javax.sql.DataSource;
+
 
 public class Main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
@@ -30,15 +28,19 @@ public class Main {
         Statement statement = connection.createStatement();
 
         // define your query
-        String query = "SELECT Country FROM employees " +
-                "WHERE country = 'usa'";
+        String query = "SELECT productID, productName,UnitPrice,UnitsInStock FROM products";
 // 2. Execute your query
         ResultSet results = statement.executeQuery(query);
 
 // process the results
         while (results.next()) {
-            String city = results.getString("Country");
-            System.out.println(city);
+            String products = results.getString("productID");
+            String productName = results.getString("ProductName");
+            double unitPrice = results.getDouble("UnitPrice");
+            String unitsInStock = results.getString("UnitsInStock");
+
+//            System.out.println(products + " " + productName + " " +  unitPrice + " " +  unitsInStock);
+            System.out.printf("Product ID: %s\nName: %s\nPrice: %.2f\nStock: %s\n----------------\n", products, productName, unitPrice, unitsInStock);
         }
 // 3. Close the connection
         connection.close();
