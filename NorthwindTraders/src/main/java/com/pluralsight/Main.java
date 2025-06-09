@@ -40,7 +40,7 @@ public class Main {
             String unitsInStock = results.getString("UnitsInStock");
 
 //            System.out.println(products + " " + productName + " " +  unitPrice + " " +  unitsInStock);
-            System.out.printf("Product ID: %s\nName: %s\nPrice: %.2f\nStock: %s\n----------------\n", products, productName, unitPrice, unitsInStock);
+            System.out.printf("Product ID: %s\nName: %s\nPrice: $%.2f\nStock: %s\n----------------\n", products, productName, unitPrice, unitsInStock);
         }
 // 3. Close the connection
         connection.close();
