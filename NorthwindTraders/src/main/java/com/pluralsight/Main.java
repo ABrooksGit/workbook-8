@@ -37,7 +37,7 @@ public class Main {
             String products = results.getString("productID");
             String productName = results.getString("ProductName");
             double unitPrice = results.getDouble("UnitPrice");
-            String unitsInStock = results.getString("UnitsInStock");
+            int unitsInStock = results.getInt("UnitsInStock");
 
 //            System.out.println(products + " " + productName + " " +  unitPrice + " " +  unitsInStock);
             System.out.printf("Product ID: %s\nName: %s\nPrice: $%.2f\nStock: %s\n----------------\n", products, productName, unitPrice, unitsInStock);
