@@ -1,10 +1,12 @@
 package com.pluralsight;
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import java.sql.*;
 
 
 public class Main {
     private static final Console console = new Console();
-    private static sqlConnectionInfo sqlConnectionInfo;
+    private static BasicDataSource basicDataSource;
 
 
     public static void main(String[] args)  {
@@ -15,7 +17,7 @@ public class Main {
                             "java com.pluralsight.UsingDriverManager <username> <password> <sqlUrl>");
             System.exit(1);
         }
-        sqlConnectionInfo = getSqlConnectionInfoFromArgs(args);
+        basicDataSource = getBasicDataSource(args);
 
         displayHome();
 
@@ -23,14 +25,19 @@ public class Main {
     }
 
 
-    public static sqlConnectionInfo getSqlConnectionInfoFromArgs(String[] args){
+    public static BasicDataSource getBasicDataSource(String[] args){
 
-        String connectionString = "jdbc:mysql://localhost:3306/northwind";
+
         String username = args[0];
         String password = args[1];
+        BasicDataSource result = new BasicDataSource();
+        result.setUrl("jdbc:mysql://localhost:3306/northwind");
+        result.setUsername(username);
+        result.setPassword(password);
 
 
-        return new sqlConnectionInfo(connectionString,username,password);
+
+        return result;
 
 
 
@@ -94,8 +101,7 @@ public class Main {
 // 1. open a connection to the database
 // use the database URL to point to the correct database
 
-            connection = DriverManager.getConnection(sqlConnectionInfo.getConnectionString(),
-                    sqlConnectionInfo.getUsername(),sqlConnectionInfo.getPassword());
+            connection = basicDataSource.getConnection();
 
             // create statement
 
@@ -151,9 +157,7 @@ public class Main {
 
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(sqlConnectionInfo.getConnectionString(),
-                    sqlConnectionInfo.getUsername(),sqlConnectionInfo.getPassword());
-
+            connection = basicDataSource.getConnection();
 
             String query = "SELECT CustomerID, ContactName  FROM customers";
             ps = connection.prepareStatement(query);
@@ -196,7 +200,7 @@ public class Main {
         Class.forName("com.mysql.cj.jdbc.Driver");
         int choice;
 
-        try (Connection connection = DriverManager.getConnection(sqlConnectionInfo.getConnectionString(), sqlConnectionInfo.getUsername(), sqlConnectionInfo.getPassword());
+        try (Connection connection = basicDataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement("SELECT CategoryID, CategoryName, Description From categories Order by categoryID asc ")) {
             try (ResultSet results = ps.executeQuery()) {
                 while (results.next()) {
