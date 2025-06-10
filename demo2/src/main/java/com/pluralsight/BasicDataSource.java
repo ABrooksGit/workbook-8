@@ -1,13 +1,18 @@
 package com.pluralsight;
 
-public class sqlConnectionInfo {
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class BasicDataSource {
 
     private String connectionString;
     private String username;
     private String password;
 
 
-    public sqlConnectionInfo(String connectionString, String username, String password) {
+    public BasicDataSource(String connectionString, String username, String password) {
         this.connectionString = connectionString;
         this.username = username;
         this.password = password;
@@ -36,5 +41,17 @@ public class sqlConnectionInfo {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Connection getConnection() throws SQLException{
+        try{
+            //Load the MYSQL Driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        return DriverManager.getConnection((this.getConnectionString()), this.getUsername(),this.getPassword());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 }

@@ -41,42 +41,43 @@ public class Main {
 
 
 
-    public static void displayHome(){
+    public static void displayHome() {
 
             String homeScreen = """
                     What do you want to do?
                     1) Display all products
                     2) Display all customers
+                    3) Display all categories
                     0) Exit
                     Select an option:\s""";
 
             int choice;
             do {
-                choice = console.promptForInt(homeScreen);
-                switch (choice) {
-                    case 1:
-                        try {
+                try {
+                    choice = console.promptForInt(homeScreen);
+                    switch (choice) {
+                        case 1:
                             displayProducts();
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                        break;
-                    case 2:
-                        try {
+                            break;
+                        case 2:
                             displayCustomers();
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
+                            break;
+                        case 3:
+                            try {
+                                displayAllCategories();
+                            } catch (ClassNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        default:
+                            System.out.println("exiting...");
+                            break;
+                    }
 
-                        break;
-                    default:
-                        System.out.println("exiting...");
-                        break;
-
-
+                } catch (SQLException e){
+                    throw new RuntimeException(e);
                 }
 
-            } while (choice != 0);
+            } while (choice != 0) ;
     }
 
 
@@ -184,6 +185,53 @@ public class Main {
             }
 
         }
+
+
+    }
+
+
+    private static void displayAllCategories() throws ClassNotFoundException {
+
+
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        int choice;
+
+        try (Connection connection = DriverManager.getConnection(sqlConnectionInfo.getConnectionString(), sqlConnectionInfo.getUsername(), sqlConnectionInfo.getPassword());
+             PreparedStatement ps = connection.prepareStatement("SELECT CategoryID, CategoryName, Description From categories Order by categoryID asc ")) {
+            try (ResultSet results = ps.executeQuery()) {
+                while (results.next()) {
+                    int categoryID = results.getInt("CategoryID");
+                    String categoryName = results.getString("CategoryName");
+                    String description = results.getString("Description");
+                    System.out.printf("%s %s %s\n", categoryID, categoryName, description);
+                }
+                choice = console.promptForInt("Which CategoryID do you want to see? ");
+            }
+
+
+
+
+            PreparedStatement preparedStatement = connection.prepareStatement("Select productId, productName, unitPrice, UnitsInStock from Products Where categoryID = ?");
+            preparedStatement.setInt(1, choice);
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                while (resultSet.next()){
+                    int productID = resultSet.getInt("ProductID");
+                    String productName = resultSet.getString("ProductName");
+                    double unitPrice = resultSet.getDouble("UnitPrice");
+                    int UnitsInStock = resultSet.getInt("UnitsInStock");
+                    System.out.printf("%s %s $%.2f %s\n", productID,productName,unitPrice,UnitsInStock);
+                }
+
+
+
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+
 
 
     }
