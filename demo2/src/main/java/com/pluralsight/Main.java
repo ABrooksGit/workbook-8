@@ -1,6 +1,9 @@
 package com.pluralsight;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import java.sql.*;
+
 
 
 public class Main {
@@ -28,17 +31,22 @@ public class Main {
 
     public static BasicDataSource getBasicDataSource(String[] args) {
 
+
+
         String username = args[0];
         String password = args[1];
-        String connectionString = "jdbc:mysql://localhost:3306/sakila";
+        BasicDataSource result = new BasicDataSource();
+        result.setUrl("jdbc:mysql://localhost:3306/sakila");
+        result.setUsername(username);
+        result.setPassword(password);
 
-        return new BasicDataSource(connectionString, username, password);
+        return result;
 
 
     }
 
 
-    public static void displayCities(int countryID) throws ClassNotFoundException {
+    public static void displayCities(int countryID){
 
 
 //        // load the MySQL Driver
@@ -47,7 +55,7 @@ public class Main {
         // 1. open a connection to the database
         // use the database URL to point to the correct database
         // define your query
-        try (Connection connection = DriverManager.getConnection(basicDataSource.getConnectionString(), basicDataSource.getUsername(), basicDataSource.getPassword());
+        try (Connection connection = basicDataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement("SELECT city FROM city WHERE country_id = ?"))
         {
             ps.setInt(1, countryID);
@@ -66,26 +74,26 @@ public class Main {
 
     }
 
-    public static void displayALlCities(){
-        // load the MySQL Driver
-//        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        // 1. open a connection to the database
-        // use the database URL to point to the correct database
-        try (Connection connection = DriverManager.getConnection(basicDataSource.getConnectionString(), basicDataSource.getUsername(), basicDataSource.getPassword());
-             PreparedStatement ps = connection.prepareStatement("SELECT city FROM city WHERE country_id = 103");
-             ResultSet results = ps.executeQuery();
-        ) {
-
-            while (results.next()) {
-                String city = results.getString("city");
-                System.out.println(city);
-            }
-
-        }catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-    }
+//    public static void displayALlCities(){
+//        // load the MySQL Driver
+////        Class.forName("com.mysql.cj.jdbc.Driver");
+//
+//        // 1. open a connection to the database
+//        // use the database URL to point to the correct database
+//        try (Connection connection = DriverManager.getConnection(basicDataSource.getConnectionString(), basicDataSource.getUsername(), basicDataSource.getPassword());
+//             PreparedStatement ps = connection.prepareStatement("SELECT city FROM city WHERE country_id = 103");
+//             ResultSet results = ps.executeQuery();
+//        ) {
+//
+//            while (results.next()) {
+//                String city = results.getString("city");
+//                System.out.println(city);
+//            }
+//
+//        }catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//    }
 
 
 }
