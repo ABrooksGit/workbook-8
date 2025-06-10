@@ -7,7 +7,7 @@ public class Main {
     private static sqlConnectionInfo sqlConnectionInfo;
 
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args)  {
 
         if (args.length != 3) {
             System.out.println(
@@ -18,7 +18,6 @@ public class Main {
         sqlConnectionInfo = getSqlConnectionInfoFromArgs(args);
 
         displayHome();
-
 
 
     }
@@ -42,33 +41,42 @@ public class Main {
 
 
 
-    public static void displayHome() throws SQLException {
+    public static void displayHome(){
 
-        String homeScreen = """
-                What do you want to do?
-                1) Display all products
-                2) Display all customers
-                0) Exit
-                Select an option:\s""";
+            String homeScreen = """
+                    What do you want to do?
+                    1) Display all products
+                    2) Display all customers
+                    0) Exit
+                    Select an option:\s""";
 
-        int choice;
-        do{
-           choice = console.promptForInt(homeScreen);
-           switch (choice){
-               case 1: displayProducts();
-               break;
-               case 2: displayCustomers();
-                break;
-               default:
-                   System.out.println("exiting...");
-                   break;
+            int choice;
+            do {
+                choice = console.promptForInt(homeScreen);
+                switch (choice) {
+                    case 1:
+                        try {
+                            displayProducts();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
+                    case 2:
+                        try {
+                            displayCustomers();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        break;
+                    default:
+                        System.out.println("exiting...");
+                        break;
 
 
-           }
+                }
 
-        } while (choice != 0);
-
-
+            } while (choice != 0);
     }
 
 
@@ -116,15 +124,18 @@ public class Main {
         }
         finally {
             // 3. Close the connection
-            if(connection != null) {
-                connection.close();
-            }
+
             if(results != null){
                 results.close();
             }
             if (ps != null){
                 ps.close();
             }
+            if(connection != null) {
+                connection.close();
+            }
+
+
         }
 
 
@@ -159,19 +170,20 @@ public class Main {
             throw new RuntimeException(e);
         }
         finally {
-            if(connection != null) {
-                connection.close();
-            }
-            if(ps != null) {
-                ps.close();
-            }
+
             if(results != null) {
                 results.close();
             }
 
+            if(ps != null) {
+                ps.close();
+            }
+
+            if(connection != null) {
+                connection.close();
+            }
+
         }
-
-
 
 
     }
